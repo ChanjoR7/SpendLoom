@@ -4,10 +4,7 @@
 
 // When the page is served by the backend (http://localhost:3000) use the same
 // origin; when opened another way (Live Server, file://) talk to port 3000.
-const API_BASE =
-    window.location.protocol.startsWith("http") && window.location.port === "3000"
-        ? ""
-        : "http://localhost:3000";
+const API_BASE = "https://spendloom-backend.onrender.com";
 
 const API_URL = `${API_BASE}/api/expenses`;
 const AI_API_URL = `${API_BASE}/api/ai/coach`;
