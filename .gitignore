@@ -1,0 +1,12 @@
+
+# Keep secrets private
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Logs and local files
+npm-debug.log*
+.DS_Store

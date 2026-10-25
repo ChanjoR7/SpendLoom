@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b12">
+    <meta name="description" content="SpendLoom — a smarter way for students to manage money.">
+
+    <title>SpendLoom — Money, Reimagined</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
+
+    <!-- ACCOUNT: SIGN UP / LOG IN -->
+    <div id="auth-screen" class="auth-screen" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <span class="brand-symbol">
+                    <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                        <path d="M9 12.5L20 6L31 12.5V25.5L20 32L9 25.5V12.5Z"
+                            stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M13.5 20H26.5M20 13.5V26.5"
+                            stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="brand-name">spend<span>loom</span></span>
+            </div>
+
+            <h1 id="auth-title" class="auth-title">Welcome back<span class="heading-period">.</span></h1>
+            <p id="auth-subtitle" class="auth-subtitle">
+                Log in to see your budget, expenses and money coach.
+            </p>
+
+            <div class="auth-tabs" role="tablist" aria-label="Account">
+                <button type="button" class="auth-tab active" id="auth-tab-login"
+                    role="tab" aria-selected="true" data-mode="login">Log in</button>
+                <button type="button" class="auth-tab" id="auth-tab-signup"
+                    role="tab" aria-selected="false" data-mode="signup">Create account</button>
+            </div>
+
+            <form id="auth-form" class="auth-form" novalidate>
+                <div class="field-group" id="auth-name-group" hidden>
+                    <label for="auth-name">Your name</label>
+                    <input type="text" id="auth-name" maxlength="60"
+                        autocomplete="name" placeholder="e.g. Aisha Khan">
+                </div>
+
+                <div class="field-group">
+                    <label for="auth-email">Email</label>
+                    <input type="email" id="auth-email" maxlength="254"
+                        autocomplete="email" placeholder="you@university.ac.uk" required>
+                </div>
+
+                <div class="field-group">
+                    <label for="auth-password">Password</label>
+                    <div class="password-wrap">
+                        <input type="password" id="auth-password" maxlength="128"
+                            autocomplete="current-password" placeholder="Your password" required>
+                        <button type="button" class="password-toggle" id="auth-password-toggle"
+                            aria-label="Show password">Show</button>
+                    </div>
+                    <span class="field-hint" id="auth-password-hint" hidden>
+                        At least 8 characters, with a letter and a number.
+                    </span>
+                </div>
+
+                <button type="submit" class="primary-button auth-submit" id="auth-submit">
+                    Log in <span aria-hidden="true">↗</span>
+                </button>
+
+                <p id="auth-message" class="form-message" aria-live="polite"></p>
+            </form>
+
+            <p class="auth-footnote">
+                <span>◇</span>
+                Your data is private to your account. Passwords are stored encrypted.
+            </p>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <header class="topbar">
+        <a class="brand" href="#dashboard" aria-label="SpendLoom home">
+            <span class="brand-symbol">
+                <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                    <path d="M9 12.5L20 6L31 12.5V25.5L20 32L9 25.5V12.5Z"
+                        stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M13.5 20H26.5M20 13.5V26.5"
+                        stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round"/>
+                </svg>
+            </span>
+            <span class="brand-name">spend<span>loom</span></span>
+            <span class="brand-beta">BETA</span>
+        </a>
+
+        <nav class="main-nav" aria-label="Main navigation">
+            <a class="nav-link active" href="#dashboard">Dashboard</a>
+            <a class="nav-link" href="#insights">Insights</a>
+            <a class="nav-link" href="#transactions">Transactions</a>
+        </nav>
+
+        <div class="header-right">
+            <span class="edition-tag">
+                <span class="status-dot"></span>
+                STUDENT FINANCE
+            </span>
+            <div class="account-menu">
+                <button type="button" class="avatar" id="account-button"
+                    aria-haspopup="true" aria-expanded="false"
+                    aria-controls="account-dropdown" title="Your account">S</button>
+
+                <div class="account-dropdown" id="account-dropdown" hidden>
+                    <p class="account-name" id="account-name">Student</p>
+                    <p class="account-email" id="account-email"></p>
+                    <button type="button" class="account-logout" id="logout-button">
+                        Log out <span aria-hidden="true">↗</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="dashboard">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="eyebrow">
+                    <span class="eyebrow-line"></span>
+                    YOUR PERSONAL MONEY SPACE
+                </div>
+
+                <p class="hero-greeting" id="hero-greeting"></p>
+
+                <h1>
+                    Your money.<br>
+                    Your <span class="gradient-text">next move.</span>
+                </h1>
+
+                <p class="hero-description">
+                    A clearer view of your finances. Smarter decisions for
+                    student life. One dashboard to bring it all together.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="primary-link" href="#transactions">
+                        Track an expense <span aria-hidden="true">↗</span>
+                    </a>
+                    <a class="secondary-link" href="#insights">
+                        Explore insights <span aria-hidden="true">↓</span>
+                    </a>
+                </div>
+
+                <div class="hero-footnote">
+                    <span class="tiny-check">✦</span>
+                    <span>Built around your spending habits</span>
+                </div>
+            </div>
+
+            <div class="hero-art" aria-hidden="true">
+                <div class="orbit orbit-outer"></div>
+                <div class="orbit orbit-middle"></div>
+                <div class="orbit orbit-inner"></div>
+
+                <div class="orbit-node node-one"></div>
+                <div class="orbit-node node-two"></div>
+                <div class="orbit-node node-three"></div>
+
+                <div class="hero-core">
+                    <div class="core-icon">
+                        <svg viewBox="0 0 48 48" fill="none">
+                            <path d="M10 31L19 22L25 27L38 13"
+                                stroke="currentColor" stroke-width="2.6"
+                                stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M28 13H38V23"
+                                stroke="currentColor" stroke-width="2.6"
+                                stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="core-label">MONEY INTELLIGENCE</span>
+                    <strong>Think ahead.</strong>
+                    <span class="core-subtitle">Spend with purpose.</span>
+                </div>
+
+                <div class="floating-chip chip-top">
+                    <span class="chip-icon cyan">⌁</span>
+                    <span>
+                        <small>YOUR MONEY</small>
+                        <strong>In focus</strong>
+                    </span>
+                </div>
+
+                <div class="floating-chip chip-bottom">
+                    <span class="chip-icon green">✦</span>
+                    <span>
+                        <small>SMARTER HABITS</small>
+                        <strong>Start here</strong>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FINANCIAL SNAPSHOT -->
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow">01 / FINANCIAL SNAPSHOT</div>
+                <h2>Your money at a glance<span class="heading-period">.</span></h2>
+                <p class="section-description">
+                    The important numbers, all in one place.
+                </p>
+            </div>
+
+            <span class="section-badge">
+                <span class="badge-star">✳</span>
+                YOUR DASHBOARD
+            </span>
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <section class="summary-grid" aria-label="Financial summary">
+
+            <article class="metric-card tone-green">
+                <div class="metric-top">
+                    <span class="metric-label">AVAILABLE BALANCE</span>
+                    <span class="metric-icon">£</span>
+                </div>
+                <p class="metric-value" id="available-balance">£0.00</p>
+                <p class="metric-caption" id="balance-caption">Estimated remaining balance</p>
+                <div class="metric-bottom">
+                    <span class="metric-indicator"></span>
+                    <span>Based on recorded spending</span>
+                </div>
+                <div class="metric-decoration"></div>
+            </article>
+
+            <article class="metric-card tone-cyan">
+                <div class="metric-top">
+                    <span class="metric-label">SAFE TO SPEND</span>
+                    <span class="metric-icon">◷</span>
+                </div>
+                <p class="metric-value" id="safe-to-spend">£0.00</p>
+                <p class="metric-caption" id="safe-to-spend-caption">Remaining monthly budget</p>
+                <div class="budget-progress" aria-hidden="true">
+                    <span id="budget-progress-bar"></span>
+                </div>
+                <div class="metric-bottom">
+                    <span class="metric-indicator"></span>
+                    <span id="budget-status">Set a budget to get started</span>
+                </div>
+                <div class="metric-decoration"></div>
+            </article>
+
+            <article class="metric-card tone-purple">
+                <div class="metric-top">
+                    <span class="metric-label">MONTHLY SPENDING</span>
+                    <span class="metric-icon">▦</span>
+                </div>
+                <p class="metric-value" id="monthly-spending">£0.00</p>
+                <p class="metric-caption" id="monthly-spending-caption">Spent in the selected month</p>
+                <div class="metric-bottom">
+                    <span class="metric-indicator"></span>
+                    <span>This month's activity</span>
+                </div>
+                <div class="metric-decoration"></div>
+            </article>
+
+            <article class="metric-card tone-orange">
+                <div class="metric-top">
+                    <span class="metric-label">BILLS SPENDING</span>
+                    <span class="metric-icon">⌁</span>
+                </div>
+                <p class="metric-value" id="upcoming-bills">£0.00</p>
+                <p class="metric-caption">Recorded spending in Bills</p>
+                <div class="metric-bottom">
+                    <span class="metric-indicator"></span>
+                    <span>Track your bill expenses</span>
+                </div>
+                <div class="metric-decoration"></div>
+            </article>
+
+        </section>
+
+        <!-- FINANCIAL PLAN -->
+        <section class="panel finance-panel" id="finance-setup">
+            <div class="panel-heading">
+                <div>
+                    <div class="eyebrow">02 / YOUR FINANCIAL BASELINE</div>
+                    <h2>Give your money a starting point<span class="heading-period">.</span></h2>
+                    <p class="section-description">
+                        Set your starting balance and monthly budget.
+                    </p>
+                </div>
+                <span class="panel-number">02</span>
+            </div>
+
+            <form id="finance-form" class="finance-form">
+
+                <div class="field-group">
+                    <label for="finance-month">Choose budget month</label>
+                    <input type="month" id="finance-month" required>
+                    <span class="field-hint">
+                        View or update your plan for any month.
+                    </span>
+                </div>
+
+                <div class="field-group">
+                    <label for="starting-balance">Starting balance (£)</label>
+                    <input
+                        type="number"
+                        id="starting-balance"
+                        min="0"
+                        step="0.01"
+                        placeholder="e.g. 500.00"
+                        required
+                    >
+                    <span class="field-hint">
+                        Money you had when you started tracking (all months)
+                    </span>
+                </div>
+
+                <div class="field-group">
+                    <label for="monthly-budget">Monthly budget (£)</label>
+                    <input
+                        type="number"
+                        id="monthly-budget"
+                        min="0"
+                        step="0.01"
+                        placeholder="e.g. 400.00"
+                        required
+                    >
+                    <span class="field-hint">
+                        Your planned spending for the month
+                    </span>
+                </div>
+
+                <div class="finance-submit">
+                    <button type="submit" class="primary-button">
+                        Save financial plan <span aria-hidden="true">↗</span>
+                    </button>
+                    <p id="finance-message" class="form-message" aria-live="polite"></p>
+                </div>
+            </form>
+        </section>
+
+        <!-- INSIGHTS AND AI COACH -->
+        <section class="content-grid" id="insights">
+
+            <!-- SPENDING OVERVIEW -->
+            <article class="panel spending-panel">
+                <div class="panel-heading">
+                    <div>
+                        <div class="eyebrow">03 / WHERE IT GOES</div>
+                        <h2>Spending overview<span class="heading-period">.</span></h2>
+                        <p class="section-description" id="overview-month">
+                            Follow the flow of your money by category.
+                        </p>
+                    </div>
+
+                    <div class="heading-icon">▥</div>
+                </div>
+
+                <div class="category-list">
+                    <div class="category-row">
+                        <span class="category-icon category-food">✳</span>
+                        <span class="category-name">Food &amp; Groceries</span>
+                        <span class="category-amount" id="spending-food">£0.00</span>
+                    </div>
+
+                    <div class="category-row">
+                        <span class="category-icon category-transport">↗</span>
+                        <span class="category-name">Transport</span>
+                        <span class="category-amount" id="spending-transport">£0.00</span>
+                    </div>
+
+                    <div class="category-row">
+                        <span class="category-icon category-shopping">◇</span>
+                        <span class="category-name">Shopping</span>
+                        <span class="category-amount" id="spending-shopping">£0.00</span>
+                    </div>
+
+                    <div class="category-row">
+                        <span class="category-icon category-entertainment">♫</span>
+                        <span class="category-name">Entertainment</span>
+                        <span class="category-amount" id="spending-entertainment">£0.00</span>
+                    </div>
+
+                    <div class="category-row">
+                        <span class="category-icon category-bills">⌁</span>
+                        <span class="category-name">Bills</span>
+                        <span class="category-amount" id="spending-bills">£0.00</span>
+                    </div>
+
+                    <div class="category-row">
+                        <span class="category-icon category-other">＋</span>
+                        <span class="category-name">Other</span>
+                        <span class="category-amount" id="spending-other">£0.00</span>
+                    </div>
+                </div>
+
+                <div class="panel-footnote">
+                    <span class="footnote-mark">↗</span>
+                    <span>Category totals update when you record expenses.</span>
+                </div>
+            </article>
+
+            <!-- AI MONEY COACH CHAT -->
+            <article class="panel ai-panel">
+
+                <div class="ai-panel-top">
+                    <div class="ai-brand">
+                        <div class="ai-logo">
+                            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <path d="M16 3L19.4 12.6L29 16L19.4 19.4L16 29L12.6 19.4L3 16L12.6 12.6L16 3Z"
+                                    stroke="currentColor" stroke-width="1.6"
+                                    stroke-linejoin="round"/>
+                                <circle cx="16" cy="16" r="3" fill="currentColor"/>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <div class="eyebrow">04 / SMART MONEY</div>
+                            <h2>AI money coach<span class="heading-period">.</span></h2>
+                        </div>
+                    </div>
+
+                    <span class="ai-tag">AI CHAT</span>
+                </div>
+
+                <p class="ai-intro">
+                    Your money questions, answered simply.
+                </p>
+
+                <!-- QUICK QUESTIONS -->
+                <div class="ai-quick-prompts">
+                    <p class="tip-label">✦ WHAT WOULD YOU LIKE TO KNOW?</p>
+
+                    <button
+                        type="button"
+                        class="ai-prompt"
+                        data-question="Summarise my spending in 3 short bullet points."
+                    >
+                        📊 Summarise my spending
+                    </button>
+
+                    <button
+                        type="button"
+                        class="ai-prompt"
+                        data-question="How am I doing against my monthly budget? Keep it short."
+                    >
+                        💷 What's happening with my budget?
+                    </button>
+
+                    <button
+                        type="button"
+                        class="ai-prompt"
+                        data-question="Give me 3 practical ways to save money based on my spending."
+                    >
+                        ✦ How can I save money?
+                    </button>
+
+                    <button
+                        type="button"
+                        class="ai-prompt"
+                        data-question="Help me decide whether I should buy something. Ask me for the item and price if I haven't provided them, then help me decide using my available budget."
+                    >
+                        🛍️ Should I buy something?
+                    </button>
+                </div>
+
+                <!-- CHAT HISTORY -->
+                <div
+                    id="ai-chat-messages"
+                    class="ai-chat-messages"
+                    aria-live="polite"
+                    aria-label="AI money coach conversation"
+                >
+                    <div class="ai-chat-bubble ai-chat-bot">Hey! 👋 I'm your SpendLoom money coach.
+
+Ask me about your spending, budget, saving goals, or a purchase. I'll keep my answers short and practical.</div>
+                </div>
+
+                <!-- CHAT INPUT -->
+                <form id="ai-chat-form" class="ai-chat-form">
+                    <input
+                        id="ai-chat-input"
+                        type="text"
+                        placeholder="Ask your money coach..."
+                        maxlength="500"
+                        autocomplete="off"
+                        aria-label="Ask your money coach a question"
+                        required
+                    >
+
+                    <button type="submit" id="ai-chat-send">
+                        Send ↗
+                    </button>
+                </form>
+
+                <p class="ai-disclaimer">
+                    AI-generated guidance, not professional financial advice.
+                    Your balance is an estimate based on information recorded in SpendLoom.
+                </p>
+
+            </article>
+        </section>
+
+        <!-- TRANSACTIONS TITLE -->
+        <section class="section-heading transactions-title" id="transactions">
+            <div>
+                <div class="eyebrow">05 / EVERY POUND HAS A STORY</div>
+                <h2>Your transactions<span class="heading-period">.</span></h2>
+                <p class="section-description">
+                    See what you've spent and keep your records together.
+                </p>
+            </div>
+
+            <a class="text-link" href="#add-expense">
+                Add a transaction <span aria-hidden="true">↓</span>
+            </a>
+        </section>
+
+        <!-- TRANSACTION HISTORY AND EXPENSE FORM -->
+        <section class="transactions-grid">
+
+            <article class="panel transactions-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Recent activity</h2>
+                        <p class="section-description" id="activity-summary">
+                            Expenses in the selected month.
+                        </p>
+                    </div>
+                    <span class="activity-icon">↕</span>
+                </div>
+
+                <div id="transaction-list" class="transaction-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">↗</div>
+                        <p>No transactions yet</p>
+                        <span>Your recorded expenses will appear here.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ADD EXPENSE -->
+            <article class="panel expense-panel" id="add-expense">
+                <div class="panel-heading">
+                    <div>
+                        <div class="eyebrow">QUICK ENTRY</div>
+                        <h2>Record an expense<span class="heading-period">.</span></h2>
+                        <p class="section-description">
+                            Capture it now. Understand it later.
+                        </p>
+                    </div>
+                    <div class="expense-plus">＋</div>
+                </div>
+
+                <form id="expense-form" class="expense-form">
+
+                    <div class="field-group">
+                        <label for="expense-name">Expense name</label>
+                        <input
+                            type="text"
+                            id="expense-name"
+                            placeholder="e.g. Weekly groceries"
+                            maxlength="100"
+                            required
+                        >
+                    </div>
+
+                    <div class="field-group">
+                        <label for="expense-amount">Amount (£)</label>
+                        <div class="amount-input-wrap">
+                            <span>£</span>
+                            <input
+                                type="number"
+                                id="expense-amount"
+                                placeholder="0.00"
+                                min="0.01"
+                                step="0.01"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="expense-date">Date</label>
+                        <input type="date" id="expense-date" required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="expense-category">Category</label>
+                        <select id="expense-category" required>
+                            <option value="">Choose a category</option>
+                            <option value="food">Food &amp; Groceries</option>
+                            <option value="transport">Transport</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="bills">Bills</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="primary-button add-expense-button">
+                        <span class="button-plus">＋</span>
+                        Add expense
+                        <span class="button-arrow" aria-hidden="true">↗</span>
+                    </button>
+
+                    <p id="form-message" class="form-message" aria-live="polite"></p>
+
+                    <div class="secure-note">
+                        <span>◇</span>
+                        Record your spending to keep your dashboard up to date.
+                    </div>
+
+                </form>
+            </article>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <a class="footer-brand" href="#dashboard">spend<span>loom</span></a>
+            <p>Your money, with a little more clarity.</p>
+            <a class="back-to-top" href="#dashboard">BACK TO TOP ↑</a>
+        </footer>
+
+    </main>
+</body>
+</html>
